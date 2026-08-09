@@ -80,11 +80,18 @@ fn install_android_deps() {
 fn main() {
     hbb_common::gen_version();
     install_android_deps();
-    #[cfg(all(windows, feature = "inline"))]
-    build_manifest();
-    #[cfg(windows)]
-    build_windows();
     let target_os = std::env::var("CARGO_CFG_TARGET_OS").unwrap();
+    // MULTSHARE FIX: #[cfg(windows)] reflects the HOST the build script itself
+    // runs on, not the crate's actual compile TARGET - when cross-compiling to
+    // Android from a Windows host, this used to unconditionally try to build
+    // src/platform/windows.cc (needs windows.h, the Windows SDK), which is
+    // never available/relevant for an Android target. Gate on the real target.
+    if target_os == "windows" {
+        #[cfg(all(windows, feature = "inline"))]
+        build_manifest();
+        #[cfg(windows)]
+        build_windows();
+    }
     if target_os == "macos" {
         #[cfg(target_os = "macos")]
         build_mac();
