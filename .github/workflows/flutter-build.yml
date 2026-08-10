@@ -782,7 +782,9 @@ jobs:
       - name: Patch flutter
         run: |
           cd $(dirname $(dirname $(which flutter)))
-          if [[ "3.24.5" == ${{env.FLUTTER_VERSION}} ]]; then
+          # This job pins 3.27.4 above (not env.FLUTTER_VERSION), so the 3.24.4-specific
+          # dropdown patch below never applies and must stay skipped here to match.
+          if [[ "3.24.5" == "3.27.4" ]]; then
             git apply ${{ github.workspace }}/.github/patches/flutter_3.24.4_dropdown_menu_enableFilter.diff
           fi
 
