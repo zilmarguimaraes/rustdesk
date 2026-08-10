@@ -671,8 +671,13 @@ jobs:
       - name: Upload Artifacts
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: rustdesk-${{ env.VERSION }}-${{ matrix.job.arch }}-unsigned-ipa
-          path: flutter/build/ios/ipa/*.ipa
+          # --no-codesign never produces an .ipa (flutter build ipa skips that packaging
+          # step entirely without a signing identity) - the .xcarchive is as far as this
+          # fork's build (no Apple Developer signing secrets) can get. It still contains
+          # Runner.app, which a resigning tool (e.g. Sideloadly, AltStore) can package
+          # and install using the user's own free Apple ID.
+          name: rustdesk-${{ env.VERSION }}-${{ matrix.job.arch }}-unsigned-xcarchive
+          path: flutter/build/ios/archive/Runner.xcarchive
 
       # - name: Publish ipa package
       #   # if: env.ANDROID_SIGNING_KEY != null && env.UPLOAD_ARTIFACT == 'true'
