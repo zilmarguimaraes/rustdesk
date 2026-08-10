@@ -773,7 +773,11 @@ jobs:
         uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
         with:
           channel: "stable"
-          flutter-version: ${{ env.FLUTTER_VERSION }}
+          # Pinned above FLUTTER_VERSION (3.24.5) on this fork: lib/common.dart uses
+          # DialogThemeData/TabBarThemeData, which don't exist until Flutter ~3.27. The
+          # official pin stays at 3.24.5 for Windows 7 support, which this fork's macOS
+          # job has no reason to share.
+          flutter-version: "3.27.4"
 
       - name: Patch flutter
         run: |
